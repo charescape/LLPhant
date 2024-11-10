@@ -47,6 +47,9 @@
         "symfony/var-dumper": "^6.3.1 || ^7.0.0"
     },
     "autoload": {
+        "files": [
+            "src/helpers.php"
+        ],
         "psr-4": {
             "LLPhant\\": "src/"
         }
