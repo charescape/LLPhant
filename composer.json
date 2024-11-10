@@ -10,7 +10,7 @@
     ],
     "require": {
         "php": "^8.3",
-        "charescape/php-functions": "~1.4.0",
+        "charescape/php-functions": "^1.5.0",
         "guzzlehttp/guzzle": "^7.9",
         "guzzlehttp/psr7": "^2.7",
         "laravel/framework": "^11.9",
