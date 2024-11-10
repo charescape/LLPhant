@@ -2,12 +2,15 @@
 
 namespace LLPhant\Query\SemanticSearch;
 
+use Illuminate\Http\JsonResponse;
 use LLPhant\Chat\ChatInterface;
 use LLPhant\Chat\Message;
+use LLPhant\Chat\OpenAIChat;
 use LLPhant\Embeddings\Document;
 use LLPhant\Embeddings\EmbeddingGenerator\EmbeddingGeneratorInterface;
 use LLPhant\Embeddings\VectorStores\VectorStoreBase;
 use Psr\Http\Message\StreamInterface;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class QuestionAnswering
 {
@@ -18,7 +21,7 @@ class QuestionAnswering
 
     public function __construct(public readonly VectorStoreBase $vectorStoreBase,
         public readonly EmbeddingGeneratorInterface $embeddingGenerator,
-        public readonly ChatInterface $chat,
+        public readonly ChatInterface|OpenAIChat $chat,
         private readonly QueryTransformer $queryTransformer = new IdentityTransformer(),
         private readonly RetrievedDocumentsTransformer $retrievedDocumentsTransformer = new IdentityDocumentsTransformer())
     {
@@ -44,6 +47,14 @@ class QuestionAnswering
         $this->chat->setSystemMessage($systemMessage);
 
         return $this->chat->generateStreamOfText($question);
+    }
+
+    public function answerQuestionStreamLaravel(string $question, int $k = 4, array $additionalArguments = []): StreamedResponse|JsonResponse
+    {
+        $systemMessage = $this->searchDocumentAndCreateSystemMessage($question, $k, $additionalArguments);
+        $this->chat->setSystemMessage($systemMessage);
+
+        return $this->chat->generateStreamOfTextLaravel($question);
     }
 
     /**
