@@ -4,6 +4,9 @@ namespace LLPhant\Embeddings\DataReader;
 
 use LLPhant\Embeddings\Document;
 use Spatie\PdfToText\Pdf;
+use thiagoalessio\TesseractOCR\TesseractOCR;
+use thiagoalessio\TesseractOCR\TesseractOcrException;
+use Throwable;
 
 final class FileDataReader implements DataReader
 {
@@ -77,6 +80,22 @@ final class FileDataReader implements DataReader
 
         if (! $this->validExtension($fileExtension)) {
             return false;
+        }
+
+        if (in_array($fileExtension, ['png', 'jpg', 'jpeg'], true)) {
+            try {
+                $result = (new TesseractOCR($path))
+                    ->lang('eng', 'chi_sim')
+                    ->run(120);
+            } catch (TesseractOcrException|Throwable $e) {
+                return false;
+            }
+
+            if (!is_string($result)) {
+                return false;
+            }
+
+            return $result;
         }
 
         if ($fileExtension === 'pdf') {
