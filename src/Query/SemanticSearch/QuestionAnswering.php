@@ -49,12 +49,17 @@ class QuestionAnswering
         return $this->chat->generateStreamOfText($question);
     }
 
-    public function answerQuestionStreamLaravel(string $question, int $k = 4, array $additionalArguments = []): StreamedResponse|JsonResponse
+    public function answerQuestionStreamLaravel(
+        string $question,
+        int $k = 4,
+        array $additionalArguments = [],
+        callable|null $beforeFlush = null
+    ): StreamedResponse|JsonResponse
     {
         $systemMessage = $this->searchDocumentAndCreateSystemMessage($question, $k, $additionalArguments);
         $this->chat->setSystemMessage($systemMessage);
 
-        return $this->chat->generateStreamOfTextLaravel($question);
+        return $this->chat->generateStreamOfTextLaravel($question, $beforeFlush);
     }
 
     /**

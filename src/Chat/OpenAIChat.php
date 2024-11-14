@@ -109,11 +109,11 @@ class OpenAIChat implements ChatInterface
         return $this->createStreamedResponse($messages);
     }
 
-    public function generateStreamOfTextLaravel(string $prompt): StreamedResponse|JsonResponse
+    public function generateStreamOfTextLaravel(string $prompt, callable|null $beforeFlush = null): StreamedResponse|JsonResponse
     {
         $messages = $this->createOpenAIMessagesFromPrompt($prompt);
 
-        return $this->createStreamedResponseLaravel($messages);
+        return $this->createStreamedResponseLaravel($messages, $beforeFlush);
     }
 
     /**
@@ -220,7 +220,10 @@ class OpenAIChat implements ChatInterface
         return [$userMessage];
     }
 
-    private function createStreamedResponseLaravel(array $messages): StreamedResponse|JsonResponse
+    private function createStreamedResponseLaravel(
+        array $messages,
+        callable|null $beforeFlush = null
+    ): StreamedResponse|JsonResponse
     {
         $openAiArgs = $this->getOpenAiArgs($messages);
 
@@ -230,13 +233,15 @@ class OpenAIChat implements ChatInterface
             return pf_response_openai_error($err->getMessage(), true);
         }
 
-        return response()->stream(function () use ($stream) {
+        return response()->stream(function () use ($stream, $beforeFlush) {
             foreach ($stream as $_stream) {
                 /* @var CreateStreamedResponse $_stream */
+                $beforeFlush && $beforeFlush($_stream);
                 echo 'data: ' . json_encode_320($_stream->toArray()) . "\n";
                 ob_flush();
                 flush();
             }
+            $beforeFlush && $beforeFlush(true);
             echo "data: [DONE]";
             ob_flush();
             flush();
