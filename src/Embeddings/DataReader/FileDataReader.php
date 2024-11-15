@@ -88,8 +88,7 @@ final class FileDataReader implements DataReader
 
         if (str_starts_with($file_mime_type ?? '', 'image/')) {
             if (env('DASHSCOPE_API_KEY_4_OCR')) {
-                // https://help.aliyun.com/zh/model-studio/user-guide/vision#da33480805fjh
-                return QwenOcrReader::getText($path, $file_mime_type);
+                return (new QwenOcrReader())->getText($path, $file_mime_type);
             } else {
                 try {
                     $result = (new TesseractOCR($path))
