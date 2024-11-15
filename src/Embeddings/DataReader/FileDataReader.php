@@ -4,6 +4,7 @@ namespace LLPhant\Embeddings\DataReader;
 
 use LLPhant\Embeddings\Document;
 use Spatie\PdfToText\Pdf;
+use Symfony\Component\Mime\MimeTypes;
 use thiagoalessio\TesseractOCR\TesseractOCR;
 use thiagoalessio\TesseractOCR\TesseractOcrException;
 use Throwable;
@@ -82,20 +83,24 @@ final class FileDataReader implements DataReader
             return false;
         }
 
-        if (in_array($fileExtension, ['png', 'jpg', 'jpeg'], true)) {
-            try {
-                $result = (new TesseractOCR($path))
-                    ->lang('eng', 'chi_sim')
-                    ->run(120);
-            } catch (TesseractOcrException|Throwable $e) {
-                return false;
-            }
+        $file_mime_type = (new MimeTypes())->guessMimeType($path);
 
-            if (!is_string($result)) {
-                return false;
-            }
 
-            return $result;
+        if (str_starts_with($file_mime_type ?? '', 'image/')) {
+            if (env('DASHSCOPE_API_KEY_4_OCR')) {
+                // https://help.aliyun.com/zh/model-studio/user-guide/vision#da33480805fjh
+                return QwenOcrReader::getText($path, $file_mime_type);
+            } else {
+                try {
+                    $result = (new TesseractOCR($path))
+                        ->lang('eng', 'chi_sim')
+                        ->run(120);
+                } catch (TesseractOcrException|Throwable $e) {
+                    return false;
+                }
+
+                return is_string($result) ? $result : false;
+            }
         }
 
         if ($fileExtension === 'pdf') {
