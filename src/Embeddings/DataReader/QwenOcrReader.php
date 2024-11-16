@@ -20,7 +20,7 @@ class QwenOcrReader
         $psr18client = new GuzzleClient([]);
 
         $sdk = OpenAI::factory()
-            ->withApiKey(env('DASHSCOPE_API_KEY_4_OCR'))
+            ->withApiKey(pf_get_config_conf_or_fail('DASHSCOPE_API_KEY_4_OCR'))
             ->withBaseUri('https://dashscope.aliyuncs.com/compatible-mode/v1')
             ->withHttpClient($psr18client)
             ->withStreamHandler(fn(RequestInterface $psr7req): ResponseInterface => $psr18client->send($psr7req, [
@@ -28,7 +28,7 @@ class QwenOcrReader
             ]))
             ->make();
 
-        if (str_contains(env('OCR_MODEL', ''), 'qwen-vl-ocr')) {
+        if (str_contains(pf_get_config_conf_or_fail('OCR_MODEL'), 'qwen-vl-ocr')) {
             // https://help.aliyun.com/zh/model-studio/user-guide/vision#da33480805fjh
             // https://help.aliyun.com/zh/model-studio/user-guide/vision#09633c7e9brr6
             // text：建议指定为 `Read all text in the image.`，设置为该值可以获得最好的识别效果。
