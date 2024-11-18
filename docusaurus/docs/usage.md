@@ -176,8 +176,26 @@ The value of the last `printf` is the total usage of the last response
 `$chat->getTotalTokens()` function that is the sum of the previous totalTokens calls,
 including the last one `what is the capital of Italy ?`.
 
-### Image
+### Images
 
+#### Reading images
+
+With OpenAI chat you can use images as input for your chat. For example:
+
+```php
+$config = new OpenAIConfig();
+$config->model = 'gpt-4o-mini';
+$chat = new OpenAIChat($config);
+$messages = [
+  VisionMessage::fromImages([
+    new ImageSource('https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Lecco_riflesso.jpg/800px-Lecco_riflesso.jpg'),
+    new ImageSource('https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Lecco_con_riflessi_all%27alba.jpg/640px-Lecco_con_riflessi_all%27alba.jpg')
+  ], 'What is represented in these images?')
+];
+$response = $chat->generateChat($messages);
+```
+
+#### Generating images
 You can use the `OpenAIImage` to generate image.
 
 We can use it to simply generate image from a prompt.
@@ -371,6 +389,7 @@ There are currently these vectorStore classes:
 - MilvusVectorStore stores the embeddings in a [Milvus](https://milvus.io/) database.
 - ChromaDBVectorStore stores the embeddings in a [ChromaDB](https://www.trychroma.com/) database.
 - AstraDBVectorStore stores the embeddings in an [AstraDB](https://www.datastax.com/products/datastax-astra) database.
+- OpenSearchVectorStore stores the embeddings in a [OpenSearch](https://opensearch.org/) database, which is a fork of Elasticsearch.
 
 Example of usage with the `DoctrineVectorStore` class to store the embeddings in a database:
 

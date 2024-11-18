@@ -5,7 +5,7 @@
 | Anthropic |   ✅    |   ✅   |      ✅      |              |               |                 |
 | Mistral   |   ✅    |   ✅   |            |              |               |                 |
 | Ollama    |   ✅    |   ✅   | Some models |              |               |                 |
-| OpenAI    |   ✅    |   ✅   |      ✅      |              |       ✅       |        ✅      |
+| OpenAI    |   ✅    |   ✅   |      ✅      |      ✅       |       ✅       |        ✅      |
 
 # Supported Vector Stores
 
@@ -19,6 +19,7 @@
 | Memory                    |
 | Milvus                    |
 | Qdrant                    |
+| OpenSearch                |
 | Redis                     |
 
 # Supported embedding generators
