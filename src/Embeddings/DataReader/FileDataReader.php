@@ -4,6 +4,7 @@ namespace LLPhant\Embeddings\DataReader;
 
 use LLPhant\Embeddings\Document;
 use Spatie\PdfToText\Pdf;
+use Html2Text\Html2Text;
 use Symfony\Component\Mime\MimeTypes;
 use thiagoalessio\TesseractOCR\TesseractOCR;
 use thiagoalessio\TesseractOCR\TesseractOcrException;
@@ -116,6 +117,10 @@ final class FileDataReader implements DataReader
 
         if ($fileExtension === 'pptx') {
             return (new PptxReader())->getText($path);
+        }
+
+        if (strtolower(pathinfo($path, PATHINFO_EXTENSION)) === 'html') {
+            return (new Html2Text(file_get_contents($path)))->getText();
         }
 
         return false;
