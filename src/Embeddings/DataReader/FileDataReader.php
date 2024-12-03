@@ -102,17 +102,19 @@ final class FileDataReader implements DataReader
             }
         }
 
+        if ($fileExtension === 'txt') {
+            return file_get_contents($path);
+        }
+
         if ($fileExtension === 'pdf') {
             return Pdf::getText($path);
         }
 
         if ($fileExtension === 'docx') {
-            $docxReader = new DocxReader();
-
-            return $docxReader->getText($path);
+            return (new DocxReader())->getText($path);
         }
 
-        return file_get_contents($path);
+        return false;
     }
 
     private function getDocument(string $content, string $entry): mixed
