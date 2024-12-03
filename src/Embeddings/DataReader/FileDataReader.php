@@ -119,7 +119,7 @@ final class FileDataReader implements DataReader
             return (new PptxReader())->getText($path);
         }
 
-        if (strtolower(pathinfo($path, PATHINFO_EXTENSION)) === 'html') {
+        if ($fileExtension === 'html') {
             return (new Html2Text(file_get_contents($path)))->getText();
         }
 
