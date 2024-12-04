@@ -111,8 +111,8 @@ final class FileDataReader implements DataReader
             return Pdf::getText($path);
         }
 
-        if ($fileExtension === 'docx') {
-            return (new DocxReader())->getText($path);
+        if (in_array($fileExtension, ['doc', 'docx'], true)) {
+            return (new DocxReader())->getText($path, DocxReader::EXT_READERS[".$fileExtension"]);
         }
 
         if ($fileExtension === 'pptx') {
