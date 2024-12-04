@@ -56,7 +56,7 @@ TXT
         $user_text = trim($user_text);
 
         return [
-            'model' => env('OCR_MODEL'),
+            'model' => pf_get_config_conf_or_fail('OCR_MODEL'),
             'messages' => [
                 [
                     'role' => 'system',
