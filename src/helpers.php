@@ -47,10 +47,13 @@ if (!function_exists('pf_response_openai_error')) {
 
         if ($is_stream) {
             return response()->stream(function () use ($error) {
+                while (@ob_end_flush()){}
+                ob_start();
+
                 echo "data: " . json_encode_320($error);
                 ob_flush();
                 flush();
-            }, 200, ['X-Accel-Buffering' => 'no']);
+            }, 200, ['X-Accel-Buffering' => 'no', 'Content-Type' => 'text/event-stream']);
         }
 
         return response()->json($error, options: pf_json_encode_options())->setStatusCode(400);
