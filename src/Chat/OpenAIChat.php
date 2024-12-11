@@ -4,17 +4,15 @@ namespace LLPhant\Chat;
 
 use Exception;
 use GuzzleHttp\Psr7\Utils;
-use Illuminate\Http\JsonResponse;
 use LLPhant\Chat\Enums\ChatRole;
 use LLPhant\Chat\Enums\OpenAIChatModel;
 use LLPhant\Chat\FunctionInfo\FunctionInfo;
 use LLPhant\Chat\FunctionInfo\ToolFormatter;
 use LLPhant\OpenAIConfig;
 use OpenAI;
-use OpenAI\Client as OpenAIClient;
+use OpenAI\Contracts\ClientContract;
 use OpenAI\Responses\Chat\CreateResponse;
 use OpenAI\Responses\Chat\CreateResponseToolCall;
-use OpenAI\Responses\Chat\CreateStreamedResponse;
 use OpenAI\Responses\Chat\CreateStreamedResponseToolCall;
 use OpenAI\Responses\StreamResponse;
 use Psr\Http\Message\StreamInterface;
@@ -25,7 +23,7 @@ use function getenv;
 
 class OpenAIChat implements ChatInterface
 {
-    private readonly OpenAIClient $client;
+    private readonly ClientContract $client;
 
     public string $model;
 
@@ -47,7 +45,7 @@ class OpenAIChat implements ChatInterface
 
     public function __construct(?OpenAIConfig $config = null)
     {
-        if ($config instanceof OpenAIConfig && $config->client instanceof OpenAIClient) {
+        if ($config instanceof OpenAIConfig && $config->client instanceof ClientContract) {
             $this->client = $config->client;
         } else {
             $apiKey = $config->apiKey ?? getenv('OPENAI_API_KEY');
