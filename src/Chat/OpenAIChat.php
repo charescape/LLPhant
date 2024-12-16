@@ -249,10 +249,13 @@ class OpenAIChat implements ChatInterface
         }
 
         return response()->stream(function () use ($stream, $beforeFlush) {
+            while (@ob_end_flush()) {
+            }
+            ob_start();
             foreach ($stream as $_stream) {
                 /* @var CreateStreamedResponse $_stream */
                 $beforeFlush && $beforeFlush($_stream);
-                echo 'data: ' . json_encode_320($_stream->toArray()) . "\n";
+                echo 'data: ' . json_encode_320($_stream->toArray()) . "\n\n";
                 ob_flush();
                 flush();
             }
@@ -260,7 +263,7 @@ class OpenAIChat implements ChatInterface
             echo "data: [DONE]";
             ob_flush();
             flush();
-        }, 200, ['X-Accel-Buffering' => 'no']);
+        }, 200, ['X-Accel-Buffering' => 'no', 'Content-Type' => 'text/event-stream']);
     }
 
     /**
