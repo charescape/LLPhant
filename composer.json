@@ -11,8 +11,8 @@
     "require": {
         "php": "^8.3",
         "charescape/php-functions": "^1.5",
-        "guzzlehttp/guzzle": "*",
-        "guzzlehttp/psr7": "*",
+        "guzzlehttp/guzzle": "^7.9",
+        "guzzlehttp/psr7": "^2.7",
         "html2text/html2text": "^4.3",
         "laravel/framework": "^11.9",
         "openai-php/client": "^v0.10.1",
