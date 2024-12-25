@@ -10,7 +10,7 @@
     ],
     "require": {
         "php": "^8.3",
-        "charescape/php-functions": "^1.5.0",
+        "charescape/php-functions": "^1.5",
         "guzzlehttp/guzzle": "*",
         "guzzlehttp/psr7": "*",
         "html2text/html2text": "^4.3",
