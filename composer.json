@@ -1,5 +1,5 @@
 {
-    "name": "charescape/llphant",
+    "name": "theodo-group/llphant",
     "description": "LLPhant is a library to help you build Generative AI applications.",
     "keywords": ["php", "openai", "GPT-4", "api", "language", "LLM", "vectorstore", "ollama", "anthropic", "mistral"],
     "license": "MIT",
@@ -9,19 +9,12 @@
         }
     ],
     "require": {
-        "php": "^8.3",
-        "charescape/php-functions": "^1.5",
-        "guzzlehttp/guzzle": "^7.9",
+        "php": "^8.1.0",
+        "guzzlehttp/guzzle": "^7.4.5",
         "guzzlehttp/psr7": "^2.7",
-        "html2text/html2text": "^4.3",
-        "laravel/framework": "^11.9",
         "openai-php/client": "^v0.10.3",
-        "phpoffice/phppresentation": "^1.1.0",
         "phpoffice/phpword": "^1.3.0",
-        "psr/http-message": "^1.1|^2.0",
-        "spatie/pdf-to-text": "^1.54",
-        "symfony/mime": "^7.1",
-        "thiagoalessio/tesseract_ocr": "^2.13",
+        "psr/http-message": "^2.0",
         "smalot/pdfparser": "^2.11"
     },
     "suggest": {
@@ -52,9 +45,6 @@
         "symfony/process": "^v7.1.8"
     },
     "autoload": {
-        "files": [
-            "src/helpers.php"
-        ],
         "psr-4": {
             "LLPhant\\": "src/"
         }
@@ -96,4 +86,3 @@
         "exclude": ["examples"]
     }
 }
-
