@@ -438,6 +438,7 @@ There are currently these vectorStore classes:
 - ChromaDBVectorStore stores the embeddings in a [ChromaDB](https://www.trychroma.com/) database.
 - AstraDBVectorStore stores the embeddings in a [AstraDBB](https://docs.datastax.com/en/astra-db-serverless/index.html) database.
 - OpenSearchVectorStore stores the embeddings in a [OpenSearch](https://opensearch.org/) database, which is a fork of Elasticsearch.
+- TypesenseVectorStore stores the embeddings in a [Typesense](https://typesense.org/) database.
 
 Example of usage with the `DoctrineVectorStore` class to store the embeddings in a database:
 
@@ -599,7 +600,7 @@ Then create a new AstraDB vector store (`LLPhant\Embeddings\VectorStores\AstraDB
 ```php
 $vectorStore = new AstraDBVectorStore(new AstraDBClient(collectionName: 'my_collection')));
 
-// You can use any enbedding generator, but the embedding length must match what is defined for your collection
+// You can use any embedding generator, but the embedding length must match what is defined for your collection
 $embeddingGenerator = new OpenAI3SmallEmbeddingGenerator();
 
 $currentEmbeddingLength = $vectorStore->getEmbeddingLength();
@@ -612,6 +613,18 @@ if ($currentEmbeddingLength === 0) {
 ````
 
 You can now use this vector store as any other VectorStore.
+
+### Typesense VectorStore
+
+Prerequisites : Typesense server running (see [Typesense](https://typesense.org/)).
+You can run it locally using this [docker compose file](https://github.com/theodo-group/LLPhant/blob/main/devx/docker-compose-typesense.yml).
+
+Then create a new TypesenseDB vector store (`LLPhant\Embeddings\VectorStores\TypeSense\TypesenseVectorStore`), for example:
+
+```php
+// Default connection properties come from env vars TYPESENSE_API_KEY and TYPESENSE_NODE
+$vectorStore = new TypesenseVectorStore('test_collection');
+````
 
 ## Question Answering
 
@@ -742,28 +755,8 @@ $answer = $qa->answerQuestion('Can I win at cukoo if I have a coral card?');
 
 ## AutoPHP
 You can now make your [AutoGPT](https://github.com/Significant-Gravitas/Auto-GPT) clone in PHP using LLPhant.
+Have a look at the [AutoPHP](https://github.com/LLPhant/AutoPHP) repository.
 
-Here is a simple example using the SerpApiSearch tool to create an autonomous PHP agent.
-You just need to describe the objective and add the tools you want to use.
-We will add more tools in the future.
-
-```php
-use LLPhant\Chat\FunctionInfo\FunctionBuilder;
-use LLPhant\Experimental\Agent\AutoPHP;
-use LLPhant\Tool\SerpApiSearch;
-
-require_once 'vendor/autoload.php';
-
-// You describe the objective
-$objective = 'Find the names of the wives or girlfriends of at least 2 players from the 2023 male French football team.';
-
-// You can add tools to the agent, so it can use them. You need an API key to use SerpApiSearch
-// Have a look here: https://serpapi.com
-$searchApi = new SerpApiSearch();
-$function = FunctionBuilder::buildFunctionInfo($searchApi, 'search');
-
-$autoPHP = new AutoPHP($objective, [$function]);
-$autoPHP->run();
 ```
 
 ## FAQ
