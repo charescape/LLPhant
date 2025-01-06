@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7df6b2f0454327c3b0825fbefdda9a41",
+    "content-hash": "1d9188c4863bb0e4d4313355f9a20387",
     "packages": [
         {
             "name": "brick/math",
@@ -137,16 +137,16 @@
         },
         {
             "name": "charescape/php-functions",
-            "version": "1.6.0",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/charescape/php-functions.git",
-                "reference": "bc0643a438ee66b4e4e4503043fe71e711ff8bfb"
+                "reference": "f75578898262a691308a83ab8d99da5ec2ce4b54"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/charescape/php-functions/zipball/bc0643a438ee66b4e4e4503043fe71e711ff8bfb",
-                "reference": "bc0643a438ee66b4e4e4503043fe71e711ff8bfb",
+                "url": "https://api.github.com/repos/charescape/php-functions/zipball/f75578898262a691308a83ab8d99da5ec2ce4b54",
+                "reference": "f75578898262a691308a83ab8d99da5ec2ce4b54",
                 "shasum": ""
             },
             "require": {
@@ -191,9 +191,9 @@
             "homepage": "https://github.com/charescape/php-functions",
             "support": {
                 "issues": "https://github.com/charescape/php-functions/issues",
-                "source": "https://github.com/charescape/php-functions/tree/1.6.0"
+                "source": "https://github.com/charescape/php-functions/tree/2.0.0"
             },
-            "time": "2024-12-24T06:15:38+00:00"
+            "time": "2024-12-29T07:42:00+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
