@@ -21,7 +21,7 @@ class GptOcrReader
 
         $sdk = OpenAI::factory()
             ->withApiKey(pf_get_config_conf_or_fail('OCR_MODEL_API_KEY'))
-            ->withBaseUri(pf_get_config_conf_or_fail('OCR_MODEL_BASE_URL'))
+            ->withBaseUri(pf_get_config_conf_or_fail('OCR_MODEL_BASEURL'))
             ->withHttpClient($psr18client)
             ->withStreamHandler(fn(RequestInterface $psr7req): ResponseInterface => $psr18client->send($psr7req, [
                 'stream' => true,
