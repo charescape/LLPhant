@@ -20,8 +20,8 @@ class GptOcrReader
         $psr18client = new GuzzleClient([]);
 
         $sdk = OpenAI::factory()
-            ->withApiKey(pf_get_config_conf_or_fail('DASHSCOPE_API_KEY_4_OCR'))
-            ->withBaseUri('https://dashscope.aliyuncs.com/compatible-mode/v1')
+            ->withApiKey(pf_get_config_conf_or_fail('OCR_MODEL_API_KEY'))
+            ->withBaseUri(pf_get_config_conf_or_fail('OCR_MODEL_BASE_URL'))
             ->withHttpClient($psr18client)
             ->withStreamHandler(fn(RequestInterface $psr7req): ResponseInterface => $psr18client->send($psr7req, [
                 'stream' => true,
@@ -72,9 +72,9 @@ TXT
                     ],
                 ],
             ],
-            'top_p' => 0.01,
-            'temperature' => 0.1,
-            'repetition_penalty' => 1.05,
+            // 'top_p' => 0.01,
+            // 'temperature' => 0.1,
+            // 'repetition_penalty' => 1.05,
         ];
     }
 }
