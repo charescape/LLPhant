@@ -89,7 +89,7 @@ final class FileDataReader implements DataReader
 
         if (str_starts_with($file_mime_type ?? '', 'image/')) {
             if (pf_get_config_conf('DASHSCOPE_API_KEY_4_OCR')) {
-                return (new QwenOcrReader())->getText($path, $file_mime_type);
+                return (new GptOcrReader())->getText($path, $file_mime_type);
             } else {
                 try {
                     $result = (new TesseractOCR($path))

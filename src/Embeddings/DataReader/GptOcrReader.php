@@ -7,7 +7,7 @@ use OpenAI;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class QwenOcrReader
+class GptOcrReader
 {
     private string $file_mime_type;
     private string $file_base64;
@@ -58,10 +58,6 @@ TXT
         return [
             'model' => pf_get_config_conf_or_fail('OCR_MODEL'),
             'messages' => [
-                [
-                    'role' => 'system',
-                    'content' => 'You are a helpful assistant.',
-                ],
                 [
                     'role' => 'user',
                     'content' => [
