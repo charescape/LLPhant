@@ -88,7 +88,7 @@ final class FileDataReader implements DataReader
 
 
         if (str_starts_with($file_mime_type ?? '', 'image/')) {
-            if (pf_get_config_conf('OCR_MODEL_API_KEY')) {
+            if (pf_get_config_conf('OCR_MODEL_APIKEY')) {
                 return (new GptOcrReader())->getText($path, $file_mime_type);
             } else {
                 try {

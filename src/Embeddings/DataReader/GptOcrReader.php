@@ -20,7 +20,7 @@ class GptOcrReader
         $psr18client = new GuzzleClient([]);
 
         $sdk = OpenAI::factory()
-            ->withApiKey(pf_get_config_conf_or_fail('OCR_MODEL_API_KEY'))
+            ->withApiKey(pf_get_config_conf_or_fail('OCR_MODEL_APIKEY'))
             ->withBaseUri(pf_get_config_conf_or_fail('OCR_MODEL_BASEURL'))
             ->withHttpClient($psr18client)
             ->withStreamHandler(fn(RequestInterface $psr7req): ResponseInterface => $psr18client->send($psr7req, [
