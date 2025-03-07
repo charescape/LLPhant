@@ -88,7 +88,12 @@ final class DoctrineVectorStore extends VectorStoreBase implements DocumentStore
         foreach ($additionalArguments as $key => $value) {
             $paramName = 'where_'.$key;
             $qb
-                ->andWhere(sprintf('e.%s = :%s', $key, $paramName))
+                ->andWhere(
+                    // TODO: More types
+                    is_array($value)
+                        ? sprintf('e.%s in (:%s)', $key, $paramName)
+                        : sprintf('e.%s = :%s', $key, $paramName)
+                )
                 ->setParameter($paramName, $value);
         }
 

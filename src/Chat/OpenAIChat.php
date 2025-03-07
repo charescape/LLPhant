@@ -4,6 +4,7 @@ namespace LLPhant\Chat;
 
 use Exception;
 use GuzzleHttp\Psr7\Utils;
+use Illuminate\Http\JsonResponse;
 use LLPhant\Chat\CalledFunction\CalledFunction;
 use LLPhant\Chat\Enums\ChatRole;
 use LLPhant\Chat\Enums\OpenAIChatModel;
@@ -12,20 +13,24 @@ use LLPhant\Chat\FunctionInfo\ToolCall;
 use LLPhant\Chat\FunctionInfo\ToolFormatter;
 use LLPhant\OpenAIConfig;
 use OpenAI;
+use OpenAI\Client as OpenAIClient;
 use OpenAI\Contracts\ClientContract;
 use OpenAI\Responses\Chat\CreateResponse;
 use OpenAI\Responses\Chat\CreateResponseToolCall;
+use OpenAI\Responses\Chat\CreateStreamedResponse;
 use OpenAI\Responses\Chat\CreateStreamedResponseToolCall;
 use OpenAI\Responses\StreamResponse;
 use Psr\Http\Message\StreamInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Throwable;
 use function getenv;
 
 class OpenAIChat implements ChatInterface
 {
-    private readonly ClientContract $client;
+    private readonly OpenAIClient $client;
 
     private readonly LoggerInterface $logger;
 
@@ -55,7 +60,7 @@ class OpenAIChat implements ChatInterface
 
     public function __construct(?OpenAIConfig $config = null, ?LoggerInterface $logger = null)
     {
-        if ($config instanceof OpenAIConfig && $config->client instanceof ClientContract) {
+        if ($config instanceof OpenAIConfig && $config->client instanceof OpenAIClient) {
             $this->client = $config->client;
         } else {
             $apiKey = $config->apiKey ?? getenv('OPENAI_API_KEY');
@@ -116,6 +121,13 @@ class OpenAIChat implements ChatInterface
         $messages = $this->createOpenAIMessagesFromPrompt($prompt);
 
         return $this->createStreamedResponse($messages);
+    }
+
+    public function generateStreamOfTextLaravel(string $prompt, callable|null $beforeFlush = null): StreamedResponse|JsonResponse
+    {
+        $messages = $this->createOpenAIMessagesFromPrompt($prompt);
+
+        return $this->createStreamedResponseLaravel($messages, $beforeFlush);
     }
 
     /**
@@ -236,6 +248,37 @@ class OpenAIChat implements ChatInterface
         $userMessage->content = $prompt;
 
         return [$userMessage];
+    }
+
+    private function createStreamedResponseLaravel(
+        array $messages,
+        callable|null $beforeFlush = null
+    ): StreamedResponse|JsonResponse
+    {
+        $openAiArgs = $this->getOpenAiArgs($messages);
+
+        try {
+            $stream = $this->client->chat()->createStreamed($openAiArgs);
+        } catch (Throwable $err) {
+            return pf_response_openai_error($err->getMessage(), true);
+        }
+
+        return response()->stream(function () use ($stream, $beforeFlush) {
+            while (@ob_end_flush()) {
+            }
+            ob_start();
+            foreach ($stream as $_stream) {
+                /* @var CreateStreamedResponse $_stream */
+                $beforeFlush && $beforeFlush($_stream);
+                echo 'data: ' . json_encode_320($_stream->toArray()) . "\n\n";
+                ob_flush();
+                flush();
+            }
+            $beforeFlush && $beforeFlush(true);
+            echo "data: [DONE]";
+            ob_flush();
+            flush();
+        }, 200, ['X-Accel-Buffering' => 'no', 'Content-Type' => 'text/event-stream']);
     }
 
     /**

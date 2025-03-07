@@ -1,6 +1,8 @@
 name: Tests
 
-on: ['pull_request']
+on:
+  push:
+  pull_request:
 
 jobs:
   ci:
@@ -9,21 +11,14 @@ jobs:
       fail-fast: true
       matrix:
         os: [ubuntu-latest]
-        php: [8.2]
-        dependency-version: [prefer-lowest, prefer-stable]
+        php: [8.3]
 
-    name: Tests P${{ matrix.php }} - ${{ matrix.os }} - ${{ matrix.dependency-version }}
+    name: Tests PHP ${{ matrix.php }} on ${{ matrix.os }}
 
     steps:
 
     - name: Checkout
       uses: actions/checkout@v4
-
-    - name: Cache dependencies
-      uses: actions/cache@v4
-      with:
-        path: ~/.composer/cache/files
-        key: dependencies-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
@@ -32,8 +27,11 @@ jobs:
         extensions: dom, mbstring, zip
         coverage: none
 
+    - name: Install os dependencies
+      run: sudo apt-get install -y poppler-utils
+
     - name: Install Composer dependencies
-      run: composer update --${{ matrix.dependency-version }} --no-interaction --prefer-dist
+      run: rm -f composer.lock && composer install --no-interaction --prefer-dist
 
     - name: Unit Tests
       run: composer test:unit

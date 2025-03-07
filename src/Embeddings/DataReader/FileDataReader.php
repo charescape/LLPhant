@@ -3,7 +3,12 @@
 namespace LLPhant\Embeddings\DataReader;
 
 use LLPhant\Embeddings\Document;
-use Smalot\PdfParser\Parser;
+use Spatie\PdfToText\Pdf;
+use Html2Text\Html2Text;
+use Symfony\Component\Mime\MimeTypes;
+use thiagoalessio\TesseractOCR\TesseractOCR;
+use thiagoalessio\TesseractOCR\TesseractOcrException;
+use Throwable;
 
 final class FileDataReader implements DataReader
 {
@@ -79,20 +84,46 @@ final class FileDataReader implements DataReader
             return false;
         }
 
+        $file_mime_type = (new MimeTypes())->guessMimeType($path);
+
+
+        if (str_starts_with($file_mime_type ?? '', 'image/')) {
+            if (pf_get_config_conf('OCR_MODEL_APIKEY')) {
+                return (new GptOcrReader())->getText($path, $file_mime_type);
+            } else {
+                try {
+                    $result = (new TesseractOCR($path))
+                        ->lang('eng', 'chi_sim')
+                        ->run(120);
+                } catch (TesseractOcrException|Throwable $e) {
+                    return false;
+                }
+
+                return is_string($result) ? $result : false;
+            }
+        }
+
+        if ($fileExtension === 'txt') {
+            return file_get_contents($path);
+        }
+
         if ($fileExtension === 'pdf') {
-            $parser = new Parser();
-            $pdf = $parser->parseFile($path);
-
-            return $pdf->getText();
+            return Pdf::getText($path);
         }
 
-        if ($fileExtension === 'docx') {
-            $docxReader = new DocxReader();
-
-            return $docxReader->getText($path);
+        if (in_array($fileExtension, ['doc', 'docx'], true)) {
+            return (new DocxReader())->getText($path, DocxReader::EXT_READERS[".$fileExtension"]);
         }
 
-        return file_get_contents($path);
+        if ($fileExtension === 'pptx') {
+            return (new PptxReader())->getText($path);
+        }
+
+        if ($fileExtension === 'html') {
+            return (new Html2Text(file_get_contents($path)))->getText();
+        }
+
+        return false;
     }
 
     private function getDocument(string $content, string $entry): mixed

@@ -10,9 +10,17 @@ use PhpOffice\PhpWord\IOFactory;
 
 class DocxReader
 {
-    public function getText(string $path): string
+    public const EXT_READERS = [
+        '.docx' => 'Word2007',
+        '.doc' => 'MsDoc',
+        '.html' => 'HTML',
+        '.odt' => 'ODText',
+        '.rtf' => 'RTF',
+    ];
+
+    public function getText(string $path, string $reader): string
     {
-        $phpWord = IOFactory::load($path);
+        $phpWord = IOFactory::load($path, $reader);
         $fullText = '';
         foreach ($phpWord->getSections() as $section) {
             $fullText .= $this->extractTextFromDocxNode($section);
