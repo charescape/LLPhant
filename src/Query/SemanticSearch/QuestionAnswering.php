@@ -80,6 +80,7 @@ class QuestionAnswering
         $this->chat->setSystemMessage($systemMessage);
         $this->session->addMessage(Message::user($question));
 
+        // TODO: 这里和以前不一样了
         // $stream = $this->chat->generateStreamOfText($question);
         //
         // return $this->session->wrapAnswerStream($stream);
