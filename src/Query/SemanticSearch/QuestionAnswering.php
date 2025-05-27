@@ -73,7 +73,16 @@ class QuestionAnswering
     ): StreamedResponse|JsonResponse
     {
         $systemMessage = $this->searchDocumentAndCreateSystemMessage($question, $k, $additionalArguments);
+        $history = $this->session->getHistoryAsString();
+        if ($history !== '' && $history !== '0') {
+            $systemMessage .= "\nUse also the conversation history to answer the question:\n".$history;
+        }
         $this->chat->setSystemMessage($systemMessage);
+        $this->session->addMessage(Message::user($question));
+
+        // $stream = $this->chat->generateStreamOfText($question);
+        //
+        // return $this->session->wrapAnswerStream($stream);
 
         return $this->chat->generateStreamOfTextLaravel($question, $beforeFlush);
     }
