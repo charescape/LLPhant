@@ -17,7 +17,7 @@ it('embed a text', function () {
     $generator = new OllamaEmbeddingGenerator($config);
 
     $mock = new MockHandler([
-        new Response(200, [], '{"embedding": [1, 2, 3]}'),
+        new Response(200, [], '{"embeddings": [[1, 2, 3]]}'),
     ]);
     $handlerStack = HandlerStack::create($mock);
     $client = new Client(['handler' => $handlerStack]);
@@ -35,7 +35,7 @@ it('embed a non UTF8 text', function () {
     $generator = new OllamaEmbeddingGenerator($config);
 
     $mock = new MockHandler([
-        new Response(200, [], '{"embedding": [1, 2, 3]}'),
+        new Response(200, [], '{"embeddings": [[1, 2, 3]]}'),
     ]);
     $handlerStack = HandlerStack::create($mock);
     $client = new Client(['handler' => $handlerStack]);
@@ -55,7 +55,7 @@ it('embed a document', function () {
     $generator = new OllamaEmbeddingGenerator($config);
 
     $mock = new MockHandler([
-        new Response(200, [], '{"embedding": [1, 2, 3]}'),
+        new Response(200, [], '{"embeddings": [[1, 2, 3]]}'),
     ]);
     $handlerStack = HandlerStack::create($mock);
     $client = new Client(['handler' => $handlerStack]);
@@ -75,7 +75,7 @@ it('embed documents', function () {
     $generator = new OllamaEmbeddingGenerator($config);
 
     $mock = new MockHandler([
-        new Response(200, [], '{"embedding": [1, 2, 3]}'),
+        new Response(200, [], '{"embeddings": [[1, 2, 3]]}'),
     ]);
     $handlerStack = HandlerStack::create($mock);
     $client = new Client(['handler' => $handlerStack]);

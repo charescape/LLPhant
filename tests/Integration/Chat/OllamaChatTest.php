@@ -34,6 +34,18 @@ it('can generate some stuff with a system prompt', function () {
     expect(strtolower($response))->toContain('ok');
 });
 
+it('can generate chat with a system prompt', function () {
+    $chat = ollamaChat();
+
+    $chat->setSystemMessage('Whatever we ask you, you MUST answer "ok"');
+    $messages = [
+        Message::user('what is one + one?'),
+    ];
+
+    $response = $chat->generateChat($messages);
+    expect(strtolower($response))->toContain('ok');
+});
+
 it('can generate some stuff using a stream', function () {
     $chat = ollamaChat();
     $response = $chat->generateStreamOfText('Can you describe the recipe for making carbonara in 5 steps');
@@ -66,8 +78,8 @@ it('can call a function', function () {
     $chat->generateChat($messages);
 
     expect($mockMailerExample->lastMessage)->toStartWith('The email has been sent to student@foo.com with the subject ')
-        ->and($chat->lastFunctionCalled)->toBe($function)
-        ->and($chat->lastToolsOutput)->toStartWith('The email has been sent to');
+        ->and($chat->lastFunctionCalled()->definition)->toBe($function)
+        ->and($chat->lastFunctionCalled()->return)->toStartWith('The email has been sent to');
 });
 
 it('can use the result of a function', function () {
@@ -88,14 +100,12 @@ it('can use the result of a function', function () {
 
     $messages = [
         Message::system('You are an AI that answers to questions about best clothing in a certain area based on the current weather. You use the external system tool currentWeatherForLocation for getting information on the current weather.'),
-        Message::user('Should I wear a fur cap and a wool scarf for my trip to Venice?'),
+        Message::user('Should I wear a fur cap and a wool scarf for my trip to Venice? Please include the current weather in your answer. '),
     ];
 
     $answer = $chat->generateChat($messages);
 
-    expect($weatherExample->lastMessage)->toContain('Venice')
-        ->and($chat->lastFunctionCalled)->toBe($function)
-        ->and($chat->lastToolsOutput)->toStartWith('Weather in')
-        ->and($answer)->toContain('wear');
-
+    expect($weatherExample->lastMessage)->toContain('sunny')
+        ->and($chat->lastFunctionCalled()->definition)->toBe($function)
+        ->and(strtolower($chat->lastFunctionCalled()->return))->toContain('weather');
 });

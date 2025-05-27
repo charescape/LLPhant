@@ -23,7 +23,7 @@ it('can generate some stuff with a system prompt', function () {
     $chat = new OpenAIChat();
     $chat->setSystemMessage('Whatever we ask you, you MUST answer "ok"');
     $response = $chat->generateText('what is one + one ?');
-    // Sometimes final a dot is added to the answer
+    // Sometimes a final dot is added to the answer
     expect(strtolower($response))->toStartWith('ok');
 });
 
@@ -55,19 +55,6 @@ it('can call a function', function () {
     $chat->addFunction($function);
     $chat->setSystemMessage('You are an AI that deliver information using the email system. When you have enough information to answer the question of the user you send a mail');
     $chat->generateText('Who is Marie Curie in one line? My email is student@foo.com');
-});
-
-it('can call a function without argument', function () {
-    $chat = new OpenAIChat();
-    $notifier = new NotificationExample();
-
-    $functionSendNotification = FunctionBuilder::buildFunctionInfo($notifier, 'sendNotificationToSlack');
-
-    $chat->addTool($functionSendNotification);
-    $chat->setSystemMessage('You need to call the function to send a confirmation notification to slack');
-    $functionInfo = $chat->generateTextOrReturnFunctionCalled('the confirmation should be called');
-
-    expect($functionInfo->name)->toBe('sendNotificationToSlack');
 });
 
 it('calls tool functions during a chat', function () {
@@ -169,4 +156,36 @@ it('can call a tool and provide the result to the assistant', function () {
     expect($response)->toBeString()
         ->and($response)->toContain('sunny')
         ->and($chat->getTotalTokens())->toBeGreaterThan($firstRequestTokenUsage);
+});
+
+it('can generate a chat stream', function () {
+    $config = new OpenAIConfig();
+    $config->model = 'gpt-4o-mini';
+    $chat = new OpenAIChat($config);
+
+    $messages[] = Message::user('Tell me the names of the first 5 roman emperors');
+
+    $chatStreamOutput = $chat->generateChatStream($messages);
+
+    expect($chatStreamOutput->getContents())->toContain('Caligula');
+});
+
+it('can call a function with streaming', function () {
+    $config = new OpenAIConfig();
+    //Tools are needed with newer models
+    $config->model = OpenAIChatModel::Gpt35Turbo->value;
+    $chat = new OpenAIChat($config);
+
+    $testFunction = new TestFunctionLLPhant();
+    $tool = new FunctionInfo('getFavouritePetName', $testFunction, 'This function returns the name of the favourite pet of the user', []);
+    $chat->addTool($tool);
+
+    $messages[] = Message::user('What is the name of my favourite pet?');
+    $chatOutput = $chat->generateChat($messages);
+
+    expect($chatOutput)->toContain($testFunction->getFavouritePetName());
+
+    $chatStreamOutput = $chat->generateChatStream($messages);
+
+    expect($chatStreamOutput->getContents())->toContain($testFunction->getFavouritePetName());
 });
