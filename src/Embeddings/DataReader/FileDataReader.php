@@ -2,6 +2,8 @@
 
 namespace LLPhant\Embeddings\DataReader;
 
+use Illuminate\Support\Facades\Process;
+use League\CommonMark\Exception\CommonMarkException;
 use LLPhant\Embeddings\Document;
 use Spatie\PdfToText\Pdf;
 use Html2Text\Html2Text;
@@ -108,6 +110,19 @@ final class FileDataReader implements DataReader
         }
 
         if ($fileExtension === 'pdf') {
+            $markitdown_bin = "/repos/bin/pipx/markitdown";
+            if (!(file_exists($markitdown_bin) || is_link($markitdown_bin))) {
+                $markitdown_bin = "/root/.local/bin/markitdown";
+            }
+
+            $markitdown_result = Process::timeout(25)
+                ->idleTimeout(20)
+                ->run("sudo $markitdown_bin $path");
+
+            if ($markitdown_result->successful()) {
+                return $markitdown_result->output();
+            }
+
             return Pdf::getText($path);
         }
 
