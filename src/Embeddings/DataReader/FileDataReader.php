@@ -118,15 +118,27 @@ final class FileDataReader implements DataReader
         }
 
         if (in_array($fileExtension, ['doc', 'docx'], true)) {
-            return (new DocxReader())->getText($path, DocxReader::EXT_READERS[".$fileExtension"]);
+            try {
+                return $this->getTextUsingMarkitdown($path);
+            } catch (\RuntimeException $e) {
+                return (new DocxReader())->getText($path, DocxReader::EXT_READERS[".$fileExtension"]);
+            }
         }
 
         if ($fileExtension === 'pptx') {
-            return (new PptxReader())->getText($path);
+            try {
+                return $this->getTextUsingMarkitdown($path);
+            } catch (\RuntimeException $e) {
+                return (new PptxReader())->getText($path);
+            }
         }
 
         if ($fileExtension === 'html') {
-            return (new Html2Text(file_get_contents($path)))->getText();
+            try {
+                return $this->getTextUsingMarkitdown($path);
+            } catch (\RuntimeException $e) {
+                return (new Html2Text(file_get_contents($path)))->getText();
+            }
         }
 
         return false;
