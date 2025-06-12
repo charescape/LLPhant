@@ -110,20 +110,11 @@ final class FileDataReader implements DataReader
         }
 
         if ($fileExtension === 'pdf') {
-            $markitdown_bin = "/repos/bin/pipx/markitdown";
-            if (!(file_exists($markitdown_bin) || is_link($markitdown_bin))) {
-                $markitdown_bin = "/root/.local/bin/markitdown";
+            try {
+                return $this->getTextUsingMarkitdown($path);
+            } catch (\RuntimeException $e) {
+                return Pdf::getText($path);
             }
-
-            $markitdown_result = Process::timeout(25)
-                ->idleTimeout(20)
-                ->run("sudo $markitdown_bin $path");
-
-            if ($markitdown_result->successful()) {
-                return $markitdown_result->output();
-            }
-
-            return Pdf::getText($path);
         }
 
         if (in_array($fileExtension, ['doc', 'docx'], true)) {
@@ -139,6 +130,24 @@ final class FileDataReader implements DataReader
         }
 
         return false;
+    }
+
+    private function getTextUsingMarkitdown(string $path): string
+    {
+        $markitdown_bin = "/repos/bin/pipx/markitdown";
+        if (!(file_exists($markitdown_bin) || is_link($markitdown_bin))) {
+            $markitdown_bin = "/root/.local/bin/markitdown";
+        }
+
+        $markitdown_result = Process::timeout(25)
+            ->idleTimeout(20)
+            ->run("sudo $markitdown_bin $path");
+
+        if ($markitdown_result->successful()) {
+            return $markitdown_result->output();
+        }
+
+        throw new \RuntimeException("Failed to get text");
     }
 
     private function getDocument(string $content, string $entry): mixed
