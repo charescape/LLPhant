@@ -151,8 +151,8 @@ final class FileDataReader implements DataReader
             $markitdown_bin = "/root/.local/bin/markitdown";
         }
 
-        $markitdown_result = Process::timeout(25)
-            ->idleTimeout(20)
+        $markitdown_result = Process::timeout(600)
+            ->idleTimeout(600)
             ->run("sudo $markitdown_bin $path");
 
         if ($markitdown_result->successful()) {
