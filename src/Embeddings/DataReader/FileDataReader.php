@@ -156,7 +156,13 @@ final class FileDataReader implements DataReader
             ->run("sudo $markitdown_bin $path");
 
         if ($markitdown_result->successful()) {
-            return $markitdown_result->output();
+            $output = $markitdown_result->output();
+
+            if (mb_strlen(trim($output)) < 50) {
+                throw new \RuntimeException("Failed to get text");
+            }
+
+            return $output;
         }
 
         throw new \RuntimeException("Failed to get text");
