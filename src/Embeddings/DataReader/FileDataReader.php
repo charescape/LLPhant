@@ -151,9 +151,15 @@ final class FileDataReader implements DataReader
             $markitdown_bin = "/root/.local/bin/markitdown";
         }
 
+        $cmd = sprintf("sudo %s %s", escapeshellarg($markitdown_bin), escapeshellarg($path));
+
+        if (PHP_SAPI === 'cli') {
+            echo "Running command: $cmd\n";
+        }
+
         $markitdown_result = Process::timeout(600)
             ->idleTimeout(600)
-            ->run(sprintf("sudo %s %s", escapeshellarg($markitdown_bin), escapeshellarg($path)));
+            ->run($cmd);
 
         if ($markitdown_result->successful()) {
             $output = $markitdown_result->output();
@@ -163,6 +169,10 @@ final class FileDataReader implements DataReader
             }
 
             return $output;
+        }
+
+        if (PHP_SAPI === 'cli') {
+            echo "Error: " . $markitdown_result->errorOutput() . "\n";
         }
 
         throw new \RuntimeException("Failed to get text");
