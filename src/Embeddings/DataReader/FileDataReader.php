@@ -159,7 +159,7 @@ final class FileDataReader implements DataReader
             $output = $markitdown_result->output();
 
             if (mb_strlen(trim($output)) < 50) {
-                throw new \RuntimeException("Failed to get text");
+                // throw new \RuntimeException("Failed to get text");
             }
 
             return $output;
