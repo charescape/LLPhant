@@ -153,7 +153,7 @@ final class FileDataReader implements DataReader
 
         $markitdown_result = Process::timeout(600)
             ->idleTimeout(600)
-            ->run("sudo $markitdown_bin $path");
+            ->run(sprintf("sudo %s %s", escapeshellarg($markitdown_bin), escapeshellarg($path)));
 
         if ($markitdown_result->successful()) {
             $output = $markitdown_result->output();
