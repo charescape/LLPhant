@@ -125,11 +125,19 @@ final class FileDataReader implements DataReader
             }
         }
 
-        if ($fileExtension === 'pptx') {
+        if ($fileExtension === 'pptx' || $fileExtension === 'ppt') {
             try {
                 return $this->getTextUsingMarkitdown($path);
             } catch (\RuntimeException $e) {
                 return (new PptxReader())->getText($path);
+            }
+        }
+
+        if ($fileExtension === 'xlsx' || $fileExtension === 'xls') {
+            try {
+                return $this->getTextUsingMarkitdown($path);
+            } catch (\RuntimeException $e) {
+                // TODO: Use a library to read Excel files
             }
         }
 
